@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -13,7 +12,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
 import ServerMonitor from './ServerMonitor';
 
-// Define form schema with zod
 const formSchema = z.object({
   appKey: z.string().min(1, "OVH App Key is required"),
   appSecret: z.string().min(1, "OVH App Secret is required"),
@@ -27,8 +25,8 @@ const formSchema = z.object({
   targetOS: z.string().min(1, "Target OS is required"),
   targetDuration: z.string().min(1, "Target Duration is required"),
   datacenter: z.string().optional(),
-  checkInterval: z.coerce.number().min(30, "Interval must be at least 30 seconds").default(360),
-  autoCheckout: z.boolean().default(false),
+  checkInterval: z.number().min(30, "Interval must be at least 30 seconds").default(360),
+  autoCheckout: z.boolean().default(false)
 });
 
 type FormData = z.infer<typeof formSchema>;
