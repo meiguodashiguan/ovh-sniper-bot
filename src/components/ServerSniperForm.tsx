@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -411,7 +412,20 @@ const ServerSniperForm = () => {
       </TabsContent>
       
       <TabsContent value="monitor">
-        {serverConfig && <ServerMonitor config={serverConfig} status={serverStatus} onStop={stopMonitoring} />}
+        {serverConfig && (
+          <ServerMonitor 
+            config={{
+              ...serverConfig,
+              // Ensure required properties are definitely provided
+              identifier: serverConfig.identifier || '',
+              targetPlanCode: serverConfig.targetPlanCode || '',
+              checkInterval: serverConfig.checkInterval || 360,
+              autoCheckout: serverConfig.autoCheckout || false
+            }} 
+            status={serverStatus} 
+            onStop={stopMonitoring} 
+          />
+        )}
       </TabsContent>
     </Tabs>
   );
