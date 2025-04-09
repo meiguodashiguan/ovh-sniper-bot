@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -12,21 +12,24 @@ import { toast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
 import ServerMonitor from './ServerMonitor';
+import { defaultCredentials, OVHCredentials } from '@/config/apiConfig';
+import { AlertCircle, Key, Server, Clock, Globe, ShieldCheck } from 'lucide-react';
+import { Separator } from "@/components/ui/separator";
 
 const formSchema = z.object({
-  appKey: z.string().min(1, "OVH App Key is required"),
-  appSecret: z.string().min(1, "OVH App Secret is required"),
-  consumerKey: z.string().min(1, "OVH Consumer Key is required"),
-  endpoint: z.string().min(1, "Endpoint is required"),
-  telegramToken: z.string().min(1, "Telegram Bot Token is required"),
-  telegramChatId: z.string().min(1, "Telegram Chat ID is required"),
-  identifier: z.string().min(1, "Identifier is required"),
-  zone: z.string().min(1, "Zone is required"),
-  targetPlanCode: z.string().min(1, "Target Plan Code is required"),
-  targetOS: z.string().min(1, "Target OS is required"),
-  targetDuration: z.string().min(1, "Target Duration is required"),
+  appKey: z.string().min(1, "OVH App Key 不能为空"),
+  appSecret: z.string().min(1, "OVH App Secret 不能为空"),
+  consumerKey: z.string().min(1, "OVH Consumer Key 不能为空"),
+  endpoint: z.string().min(1, "Endpoint 不能为空"),
+  telegramToken: z.string().min(1, "Telegram Bot Token 不能为空"),
+  telegramChatId: z.string().min(1, "Telegram Chat ID 不能为空"),
+  identifier: z.string().min(1, "标识符不能为空"),
+  zone: z.string().min(1, "区域不能为空"),
+  targetPlanCode: z.string().min(1, "目标计划代码不能为空"),
+  targetOS: z.string().min(1, "目标操作系统不能为空"),
+  targetDuration: z.string().min(1, "目标期限不能为空"),
   datacenter: z.string().optional(),
-  checkInterval: z.number().min(30, "Interval must be at least 30 seconds").default(360),
+  checkInterval: z.number().min(30, "检查间隔必须至少30秒").default(360),
   autoCheckout: z.boolean().default(false)
 });
 
@@ -36,6 +39,7 @@ const ServerSniperForm = () => {
   const [monitoring, setMonitoring] = useState(false);
   const [serverConfig, setServerConfig] = useState<FormData | null>(null);
   const [serverStatus, setServerStatus] = useState<any>(null);
+  const [activeTab, setActiveTab] = useState("config");
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -47,6 +51,13 @@ const ServerSniperForm = () => {
       autoCheckout: false,
     },
   });
+
+  // 当监控开始后自动切换到监控选项卡
+  useEffect(() => {
+    if (monitoring) {
+      setActiveTab("monitor");
+    }
+  }, [monitoring]);
 
   const startMonitoring = async (data: FormData) => {
     try {
@@ -60,19 +71,19 @@ const ServerSniperForm = () => {
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.message || 'Failed to start monitoring');
+        throw new Error(error.message || '启动监控失败');
       }
 
       setServerConfig(data);
       setMonitoring(true);
       toast({
-        title: "Monitoring Started",
-        description: `Checking for ${data.targetPlanCode} availability every ${data.checkInterval} seconds.`,
+        title: "监控已启动",
+        description: `正在每 ${data.checkInterval} 秒检查 ${data.targetPlanCode} 的可用性。`,
       });
     } catch (error) {
       toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to start monitoring",
+        title: "错误",
+        description: error instanceof Error ? error.message : "启动监控失败",
         variant: "destructive",
       });
     }
@@ -86,19 +97,20 @@ const ServerSniperForm = () => {
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.message || 'Failed to stop monitoring');
+        throw new Error(error.message || '停止监控失败');
       }
 
       setMonitoring(false);
       setServerStatus(null);
+      setActiveTab("config");
       toast({
-        title: "Monitoring Stopped",
-        description: "Server availability check has been stopped.",
+        title: "监控已停止",
+        description: "服务器可用性检查已停止。",
       });
     } catch (error) {
       toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to stop monitoring",
+        title: "错误",
+        description: error instanceof Error ? error.message : "停止监控失败",
         variant: "destructive",
       });
     }
@@ -113,25 +125,37 @@ const ServerSniperForm = () => {
   };
 
   return (
-    <Tabs defaultValue="config" className="w-full">
+    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
       <TabsList className="grid w-full grid-cols-2 mb-4">
-        <TabsTrigger value="config">Configuration</TabsTrigger>
-        <TabsTrigger value="monitor" disabled={!monitoring}>Monitoring</TabsTrigger>
+        <TabsTrigger value="config" className="flex items-center gap-2">
+          <Key size={16} />
+          <span>配置</span>
+        </TabsTrigger>
+        <TabsTrigger value="monitor" disabled={!monitoring} className="flex items-center gap-2">
+          <Server size={16} />
+          <span>监控</span>
+        </TabsTrigger>
       </TabsList>
       
       <TabsContent value="config">
-        <Card>
+        <Card className="border-t-4 border-t-blue-500">
           <CardHeader>
-            <CardTitle>OVH Server Configuration</CardTitle>
+            <CardTitle className="flex items-center gap-2 text-xl">
+              <Server className="h-5 w-5 text-blue-500" />
+              OVH 服务器配置
+            </CardTitle>
             <CardDescription>
-              Enter your OVH API credentials and server preferences.
+              输入您的 OVH API 凭据和服务器偏好。
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 <div className="space-y-4">
-                  <h3 className="text-lg font-medium">API Credentials</h3>
+                  <div className="flex items-center gap-2 text-lg font-medium text-blue-700">
+                    <Key className="h-5 w-5" />
+                    <h3>API 凭据</h3>
+                  </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
@@ -140,7 +164,7 @@ const ServerSniperForm = () => {
                         <FormItem>
                           <FormLabel>OVH App Key</FormLabel>
                           <FormControl>
-                            <Input placeholder="OVH App Key" {...field} />
+                            <Input placeholder="请输入 OVH App Key" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -153,7 +177,7 @@ const ServerSniperForm = () => {
                         <FormItem>
                           <FormLabel>OVH App Secret</FormLabel>
                           <FormControl>
-                            <Input type="password" placeholder="OVH App Secret" {...field} />
+                            <Input type="password" placeholder="请输入 OVH App Secret" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -166,7 +190,7 @@ const ServerSniperForm = () => {
                         <FormItem>
                           <FormLabel>OVH Consumer Key</FormLabel>
                           <FormControl>
-                            <Input type="password" placeholder="OVH Consumer Key" {...field} />
+                            <Input type="password" placeholder="请输入 OVH Consumer Key" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -181,12 +205,12 @@ const ServerSniperForm = () => {
                           <FormControl>
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                               <SelectTrigger>
-                                <SelectValue placeholder="Select endpoint" />
+                                <SelectValue placeholder="选择端点" />
                               </SelectTrigger>
                               <SelectContent>
-                                <SelectItem value="ovh-eu">OVH Europe (ovh-eu)</SelectItem>
-                                <SelectItem value="ovh-us">OVH US (ovh-us)</SelectItem>
-                                <SelectItem value="ovh-ca">OVH Canada (ovh-ca)</SelectItem>
+                                <SelectItem value="ovh-eu">OVH 欧洲 (ovh-eu)</SelectItem>
+                                <SelectItem value="ovh-us">OVH 美国 (ovh-us)</SelectItem>
+                                <SelectItem value="ovh-ca">OVH 加拿大 (ovh-ca)</SelectItem>
                               </SelectContent>
                             </Select>
                           </FormControl>
@@ -197,8 +221,13 @@ const ServerSniperForm = () => {
                   </div>
                 </div>
 
+                <Separator className="my-6" />
+
                 <div className="space-y-4">
-                  <h3 className="text-lg font-medium">Notification Settings</h3>
+                  <div className="flex items-center gap-2 text-lg font-medium text-green-700">
+                    <Bell className="h-5 w-5" />
+                    <h3>通知设置</h3>
+                  </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
@@ -207,7 +236,7 @@ const ServerSniperForm = () => {
                         <FormItem>
                           <FormLabel>Telegram Bot Token</FormLabel>
                           <FormControl>
-                            <Input type="password" placeholder="Telegram Bot Token" {...field} />
+                            <Input type="password" placeholder="请输入 Telegram Bot Token" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -220,7 +249,7 @@ const ServerSniperForm = () => {
                         <FormItem>
                           <FormLabel>Telegram Chat ID</FormLabel>
                           <FormControl>
-                            <Input placeholder="Telegram Chat ID" {...field} />
+                            <Input placeholder="请输入 Telegram Chat ID" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -229,20 +258,25 @@ const ServerSniperForm = () => {
                   </div>
                 </div>
 
+                <Separator className="my-6" />
+
                 <div className="space-y-4">
-                  <h3 className="text-lg font-medium">Server Configuration</h3>
+                  <div className="flex items-center gap-2 text-lg font-medium text-purple-700">
+                    <Server className="h-5 w-5" />
+                    <h3>服务器配置</h3>
+                  </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
                       name="identifier"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Identifier</FormLabel>
+                          <FormLabel>标识符</FormLabel>
                           <FormControl>
-                            <Input placeholder="e.g., go-ovh-FR" {...field} />
+                            <Input placeholder="例如：go-ovh-FR" {...field} />
                           </FormControl>
                           <FormDescription>
-                            Your identification tag for this monitoring session
+                            为此监控会话设置的识别标签
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
@@ -253,25 +287,25 @@ const ServerSniperForm = () => {
                       name="zone"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Zone</FormLabel>
+                          <FormLabel>区域</FormLabel>
                           <FormControl>
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                               <SelectTrigger>
-                                <SelectValue placeholder="Select zone" />
+                                <SelectValue placeholder="选择区域" />
                               </SelectTrigger>
                               <SelectContent>
-                                <SelectItem value="FR">France (FR)</SelectItem>
-                                <SelectItem value="GB">Great Britain (GB)</SelectItem>
-                                <SelectItem value="DE">Germany (DE)</SelectItem>
-                                <SelectItem value="ES">Spain (ES)</SelectItem>
-                                <SelectItem value="IT">Italy (IT)</SelectItem>
-                                <SelectItem value="PL">Poland (PL)</SelectItem>
-                                <SelectItem value="PT">Portugal (PT)</SelectItem>
-                                <SelectItem value="IE">Ireland (IE)</SelectItem>
-                                <SelectItem value="FI">Finland (FI)</SelectItem>
-                                <SelectItem value="LT">Lithuania (LT)</SelectItem>
-                                <SelectItem value="CZ">Czech Republic (CZ)</SelectItem>
-                                <SelectItem value="NL">Netherlands (NL)</SelectItem>
+                                <SelectItem value="FR">法国 (FR)</SelectItem>
+                                <SelectItem value="GB">英国 (GB)</SelectItem>
+                                <SelectItem value="DE">德国 (DE)</SelectItem>
+                                <SelectItem value="ES">西班牙 (ES)</SelectItem>
+                                <SelectItem value="IT">意大利 (IT)</SelectItem>
+                                <SelectItem value="PL">波兰 (PL)</SelectItem>
+                                <SelectItem value="PT">葡萄牙 (PT)</SelectItem>
+                                <SelectItem value="IE">爱尔兰 (IE)</SelectItem>
+                                <SelectItem value="FI">芬兰 (FI)</SelectItem>
+                                <SelectItem value="LT">立陶宛 (LT)</SelectItem>
+                                <SelectItem value="CZ">捷克共和国 (CZ)</SelectItem>
+                                <SelectItem value="NL">荷兰 (NL)</SelectItem>
                               </SelectContent>
                             </Select>
                           </FormControl>
@@ -284,12 +318,12 @@ const ServerSniperForm = () => {
                       name="targetPlanCode"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Target Plan Code</FormLabel>
+                          <FormLabel>目标计划代码</FormLabel>
                           <FormControl>
-                            <Input placeholder="e.g., 1801sk12" {...field} />
+                            <Input placeholder="例如：1801sk12" {...field} />
                           </FormControl>
                           <FormDescription>
-                            The OVH server plan code you want to monitor
+                            您想要监控的 OVH 服务器计划代码
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
@@ -300,12 +334,12 @@ const ServerSniperForm = () => {
                       name="datacenter"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Preferred Datacenter (Optional)</FormLabel>
+                          <FormLabel>首选数据中心（可选）</FormLabel>
                           <FormControl>
-                            <Input placeholder="e.g., rbx" {...field} />
+                            <Input placeholder="例如：rbx" {...field} />
                           </FormControl>
                           <FormDescription>
-                            Leave empty to accept any available datacenter
+                            留空以接受任何可用的数据中心
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
@@ -316,12 +350,12 @@ const ServerSniperForm = () => {
                       name="targetOS"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Target OS</FormLabel>
+                          <FormLabel>目标操作系统</FormLabel>
                           <FormControl>
-                            <Input placeholder="e.g., none_64.en" {...field} />
+                            <Input placeholder="例如：none_64.en" {...field} />
                           </FormControl>
                           <FormDescription>
-                            The operating system to install
+                            要安装的操作系统
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
@@ -332,17 +366,17 @@ const ServerSniperForm = () => {
                       name="targetDuration"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Target Duration</FormLabel>
+                          <FormLabel>目标期限</FormLabel>
                           <FormControl>
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                               <SelectTrigger>
-                                <SelectValue placeholder="Select duration" />
+                                <SelectValue placeholder="选择期限" />
                               </SelectTrigger>
                               <SelectContent>
-                                <SelectItem value="P1M">1 Month (P1M)</SelectItem>
-                                <SelectItem value="P3M">3 Months (P3M)</SelectItem>
-                                <SelectItem value="P6M">6 Months (P6M)</SelectItem>
-                                <SelectItem value="P12M">12 Months (P12M)</SelectItem>
+                                <SelectItem value="P1M">1 个月 (P1M)</SelectItem>
+                                <SelectItem value="P3M">3 个月 (P3M)</SelectItem>
+                                <SelectItem value="P6M">6 个月 (P6M)</SelectItem>
+                                <SelectItem value="P12M">12 个月 (P12M)</SelectItem>
                               </SelectContent>
                             </Select>
                           </FormControl>
@@ -353,20 +387,30 @@ const ServerSniperForm = () => {
                   </div>
                 </div>
 
+                <Separator className="my-6" />
+
                 <div className="space-y-4">
-                  <h3 className="text-lg font-medium">Monitoring Settings</h3>
+                  <div className="flex items-center gap-2 text-lg font-medium text-orange-700">
+                    <Clock className="h-5 w-5" />
+                    <h3>监控设置</h3>
+                  </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
                       name="checkInterval"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Check Interval (seconds)</FormLabel>
+                          <FormLabel>检查间隔（秒）</FormLabel>
                           <FormControl>
-                            <Input type="number" min={30} {...field} />
+                            <Input 
+                              type="number" 
+                              min={30} 
+                              {...field} 
+                              onChange={(e) => field.onChange(parseInt(e.target.value, 10))}
+                            />
                           </FormControl>
                           <FormDescription>
-                            How often to check for server availability (min 30 seconds)
+                            多久检查一次服务器可用性（最少30秒）
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
@@ -379,10 +423,10 @@ const ServerSniperForm = () => {
                         <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                           <div className="space-y-0.5">
                             <FormLabel className="text-base">
-                              Auto Checkout
+                              自动结账
                             </FormLabel>
                             <FormDescription>
-                              Automatically purchase when server is available
+                              服务器可用时自动购买
                             </FormDescription>
                           </div>
                           <FormControl>
@@ -397,14 +441,18 @@ const ServerSniperForm = () => {
                   </div>
                 </div>
 
-                <CardFooter className="px-0 pt-4">
+                <div className="flex justify-between items-center pt-4">
+                  <div className="flex items-center text-amber-600">
+                    <AlertCircle className="h-4 w-4 mr-2" />
+                    <span className="text-sm">请确保所有信息准确无误</span>
+                  </div>
                   <Button 
                     type="submit" 
-                    className={monitoring ? "bg-red-500 hover:bg-red-600" : ""}
+                    className={monitoring ? "bg-red-500 hover:bg-red-600" : "bg-blue-600 hover:bg-blue-700"}
                   >
-                    {monitoring ? "Stop Monitoring" : "Start Monitoring"}
+                    {monitoring ? "停止监控" : "开始监控"}
                   </Button>
-                </CardFooter>
+                </div>
               </form>
             </Form>
           </CardContent>
@@ -416,7 +464,7 @@ const ServerSniperForm = () => {
           <ServerMonitor 
             config={{
               ...serverConfig,
-              // Ensure required properties are definitely provided
+              // 确保所需属性一定存在
               identifier: serverConfig.identifier || '',
               targetPlanCode: serverConfig.targetPlanCode || '',
               checkInterval: serverConfig.checkInterval || 360,

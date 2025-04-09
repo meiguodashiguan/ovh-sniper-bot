@@ -12,12 +12,16 @@
 ### 前端部分
 - 使用 React, TypeScript, Tailwind CSS 构建
 - 主要文件位于 `src/pages` 和 `src/components` 目录
-- 前端负责用户界面、表单验证和与后端 API 的通信
+- 前端负责用户界面、表单验证和向后端API发送请求
 
 ### 后端部分
 - 使用 Express.js 构建的 API
 - 主要文件位于 `src/server/api` 目录
 - 后端负责与 OVH API 通信、监控服务器状态和处理购买请求
+
+### 配置文件
+- API凭据配置位于 `src/config/apiConfig.ts`
+- 包含与OVH API通信所需的配置信息
 
 ## 如何编辑此代码？
 
