@@ -7,15 +7,10 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { CheckCircle, XCircle, RefreshCw, Clock, AlertTriangle, Server, Activity } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
 interface ServerMonitorProps {
   config: {
-    appKey?: string;
-    appSecret?: string;
-    consumerKey?: string;
-    endpoint?: string;
-    telegramToken?: string;
-    telegramChatId?: string;
     identifier: string; 
     zone?: string;
     targetPlanCode: string; 
@@ -34,7 +29,8 @@ const ServerMonitor: React.FC<ServerMonitorProps> = ({ config, status, onStop })
     isAvailable: false,
     lastChecked: new Date(),
     checkCount: 0,
-    logs: []
+    logs: [],
+    purchaseStatus: null
   });
   const [nextCheckProgress, setNextCheckProgress] = useState(0);
 
@@ -54,6 +50,23 @@ const ServerMonitor: React.FC<ServerMonitorProps> = ({ config, status, onStop })
               description: `服务器 ${config.targetPlanCode} 现在可用。`,
               variant: "default",
             });
+          }
+          
+          // 如果有购买状态更新，显示通知
+          if (data.purchaseStatus && data.purchaseStatus !== monitorData.purchaseStatus) {
+            if (data.purchaseStatus.success) {
+              toast({
+                title: "购买成功！",
+                description: `服务器 ${config.targetPlanCode} 已成功购买。`,
+                variant: "default",
+              });
+            } else if (data.purchaseStatus.error) {
+              toast({
+                title: "购买失败",
+                description: data.purchaseStatus.error,
+                variant: "destructive",
+              });
+            }
           }
         }
       } catch (error) {
@@ -79,7 +92,7 @@ const ServerMonitor: React.FC<ServerMonitorProps> = ({ config, status, onStop })
       clearInterval(interval);
       clearInterval(progressInterval);
     };
-  }, [config.targetPlanCode, config.checkInterval, monitorData.isAvailable]);
+  }, [config.targetPlanCode, config.checkInterval, monitorData.isAvailable, monitorData.purchaseStatus]);
 
   const formatDate = (date: string | Date) => {
     return new Date(date).toLocaleString('zh-CN');
@@ -136,6 +149,28 @@ const ServerMonitor: React.FC<ServerMonitorProps> = ({ config, status, onStop })
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
+        {monitorData.purchaseStatus && (
+          <Alert
+            variant={monitorData.purchaseStatus.success ? "default" : "destructive"}
+            className={monitorData.purchaseStatus.success ? "bg-green-50 border-green-200" : ""}
+          >
+            <AlertTitle className="flex items-center">
+              {monitorData.purchaseStatus.success ? (
+                <><CheckCircle className="h-4 w-4 mr-2 text-green-500" /> 购买状态：成功</>
+              ) : (
+                <><AlertTriangle className="h-4 w-4 mr-2" /> 购买状态：失败</>
+              )}
+            </AlertTitle>
+            <AlertDescription>
+              {monitorData.purchaseStatus.success ? (
+                <>订单已成功提交，订单号: {monitorData.purchaseStatus.orderId || '未知'}</>
+              ) : (
+                <>失败原因: {monitorData.purchaseStatus.error || '未知错误'}</>
+              )}
+            </AlertDescription>
+          </Alert>
+        )}
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="border rounded-md p-4 bg-gray-50">
             <div className="flex items-center text-sm text-gray-500 mb-2">
@@ -190,7 +225,9 @@ const ServerMonitor: React.FC<ServerMonitorProps> = ({ config, status, onStop })
                     <span className="text-gray-500 text-xs">{formatDate(log.timestamp)}</span>: 
                     <span className={
                       log.message.includes('可用') ? 'text-green-600 font-medium' : 
-                      log.message.includes('错误') ? 'text-red-600' : 'text-gray-700'
+                      log.message.includes('购买成功') ? 'text-green-600 font-medium' :
+                      log.message.includes('错误') || log.message.includes('失败') ? 'text-red-600' : 
+                      'text-gray-700'
                     }> {log.message}</span>
                     {index < monitorData.logs.length - 1 && <Separator className="my-2" />}
                   </div>

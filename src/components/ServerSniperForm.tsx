@@ -13,16 +13,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
 import ServerMonitor from './ServerMonitor';
 import { defaultCredentials, OVHCredentials } from '@/config/apiConfig';
-import { AlertCircle, Key, Server, Clock, Globe, ShieldCheck, Bell } from 'lucide-react';
+import { AlertCircle, Key, Server, Clock, ShieldCheck, Bell } from 'lucide-react';
 import { Separator } from "@/components/ui/separator";
 
 const formSchema = z.object({
-  appKey: z.string().min(1, "OVH App Key 不能为空"),
-  appSecret: z.string().min(1, "OVH App Secret 不能为空"),
-  consumerKey: z.string().min(1, "OVH Consumer Key 不能为空"),
-  endpoint: z.string().min(1, "Endpoint 不能为空"),
-  telegramToken: z.string().min(1, "Telegram Bot Token 不能为空"),
-  telegramChatId: z.string().min(1, "Telegram Chat ID 不能为空"),
   identifier: z.string().min(1, "标识符不能为空"),
   zone: z.string().min(1, "区域不能为空"),
   targetPlanCode: z.string().min(1, "目标计划代码不能为空"),
@@ -44,7 +38,6 @@ const ServerSniperForm = () => {
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      endpoint: 'ovh-eu',
       targetOS: 'none_64.en',
       targetDuration: 'P1M',
       checkInterval: 360,
@@ -145,121 +138,12 @@ const ServerSniperForm = () => {
               OVH 服务器配置
             </CardTitle>
             <CardDescription>
-              输入您的 OVH API 凭据和服务器偏好。
+              配置您的服务器监控偏好。
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <div className="space-y-4">
-                  <div className="flex items-center gap-2 text-lg font-medium text-blue-700">
-                    <Key className="h-5 w-5" />
-                    <h3>API 凭据</h3>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="appKey"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>OVH App Key</FormLabel>
-                          <FormControl>
-                            <Input placeholder="请输入 OVH App Key" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="appSecret"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>OVH App Secret</FormLabel>
-                          <FormControl>
-                            <Input type="password" placeholder="请输入 OVH App Secret" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="consumerKey"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>OVH Consumer Key</FormLabel>
-                          <FormControl>
-                            <Input type="password" placeholder="请输入 OVH Consumer Key" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="endpoint"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>OVH Endpoint</FormLabel>
-                          <FormControl>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                              <SelectTrigger>
-                                <SelectValue placeholder="选择端点" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="ovh-eu">OVH 欧洲 (ovh-eu)</SelectItem>
-                                <SelectItem value="ovh-us">OVH 美国 (ovh-us)</SelectItem>
-                                <SelectItem value="ovh-ca">OVH 加拿大 (ovh-ca)</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </div>
-
-                <Separator className="my-6" />
-
-                <div className="space-y-4">
-                  <div className="flex items-center gap-2 text-lg font-medium text-green-700">
-                    <Bell className="h-5 w-5" />
-                    <h3>通知设置</h3>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="telegramToken"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Telegram Bot Token</FormLabel>
-                          <FormControl>
-                            <Input type="password" placeholder="请输入 Telegram Bot Token" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="telegramChatId"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Telegram Chat ID</FormLabel>
-                          <FormControl>
-                            <Input placeholder="请输入 Telegram Chat ID" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </div>
-
-                <Separator className="my-6" />
-
                 <div className="space-y-4">
                   <div className="flex items-center gap-2 text-lg font-medium text-purple-700">
                     <Server className="h-5 w-5" />
