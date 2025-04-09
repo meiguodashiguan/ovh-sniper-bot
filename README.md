@@ -1,73 +1,89 @@
-# Welcome to your Lovable project
 
-## Project info
+# OVH 服务器监控与抢购系统
+
+## 项目信息
 
 **URL**: https://lovable.dev/projects/cbb03994-efde-4378-9920-18fac285c6d6
 
-## How can I edit this code?
+## 项目结构
 
-There are several ways of editing your application.
+本项目是一个全栈应用程序，用于监控 OVH 服务器的可用性并在服务器可用时自动购买。
 
-**Use Lovable**
+### 前端部分
+- 使用 React, TypeScript, Tailwind CSS 构建
+- 主要文件位于 `src/pages` 和 `src/components` 目录
+- 前端负责用户界面、表单验证和与后端 API 的通信
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/cbb03994-efde-4378-9920-18fac285c6d6) and start prompting.
+### 后端部分
+- 使用 Express.js 构建的 API
+- 主要文件位于 `src/server/api` 目录
+- 后端负责与 OVH API 通信、监控服务器状态和处理购买请求
 
-Changes made via Lovable will be committed automatically to this repo.
+## 如何编辑此代码？
 
-**Use your preferred IDE**
+有多种方式可以编辑您的应用程序。
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+**使用 Lovable**
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+只需访问 [Lovable 项目](https://lovable.dev/projects/cbb03994-efde-4378-9920-18fac285c6d6) 并开始提示。
 
-Follow these steps:
+通过 Lovable 进行的更改将自动提交到此仓库。
+
+**使用您喜欢的 IDE**
+
+如果您想使用自己的 IDE 在本地工作，您可以克隆此仓库并推送更改。推送的更改也将反映在 Lovable 中。
+
+唯一的要求是安装 Node.js 和 npm - [使用 nvm 安装](https://github.com/nvm-sh/nvm#installing-and-updating)
+
+按照以下步骤操作：
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+# 步骤 1：使用项目的 Git URL 克隆仓库。
+git clone <您的GIT_URL>
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+# 步骤 2：导航到项目目录。
+cd <您的项目名称>
 
-# Step 3: Install the necessary dependencies.
+# 步骤 3：安装必要的依赖项。
 npm i
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# 步骤 4：启动开发服务器，实现自动重新加载和即时预览。
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+**直接在 GitHub 中编辑文件**
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+- 导航到所需的文件。
+- 点击文件视图右上方的"编辑"按钮（铅笔图标）。
+- 进行更改并提交更改。
 
-**Use GitHub Codespaces**
+**使用 GitHub Codespaces**
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+- 导航到仓库的主页。
+- 点击右上方附近的"代码"按钮（绿色按钮）。
+- 选择"Codespaces"选项卡。
+- 点击"新建 codespace"以启动新的 Codespace 环境。
+- 直接在 Codespace 中编辑文件，完成后提交并推送更改。
 
-## What technologies are used for this project?
+## 此项目使用了哪些技术？
 
-This project is built with:
+本项目基于以下技术构建：
 
 - Vite
 - TypeScript
 - React
 - shadcn-ui
 - Tailwind CSS
+- Express.js (后端API)
 
-## How can I deploy this project?
+## 如何部署此项目？
 
-Simply open [Lovable](https://lovable.dev/projects/cbb03994-efde-4378-9920-18fac285c6d6) and click on Share -> Publish.
+只需打开 [Lovable](https://lovable.dev/projects/cbb03994-efde-4378-9920-18fac285c6d6) 并点击 分享 -> 发布。
 
-## Can I connect a custom domain to my Lovable project?
+## 我可以将自定义域名连接到我的 Lovable 项目吗？
 
-Yes it is!
+是的，可以！
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+要连接域名，请导航到 项目 > 设置 > 域名，然后点击连接域名。
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+在此处阅读更多信息：[设置自定义域名](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)

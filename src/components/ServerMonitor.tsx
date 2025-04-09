@@ -7,7 +7,6 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { CheckCircle, XCircle, RefreshCw, Clock, AlertTriangle } from 'lucide-react';
 
-// Update the type definition to match what's being passed from ServerSniperForm
 interface ServerMonitorProps {
   config: {
     appKey?: string;
@@ -16,14 +15,14 @@ interface ServerMonitorProps {
     endpoint?: string;
     telegramToken?: string;
     telegramChatId?: string;
-    identifier: string; // Required
+    identifier: string; 
     zone?: string;
-    targetPlanCode: string; // Required
+    targetPlanCode: string; 
     targetOS?: string;
     targetDuration?: string;
     datacenter?: string;
-    checkInterval: number; // Required
-    autoCheckout: boolean; // Required
+    checkInterval: number; 
+    autoCheckout: boolean; 
   };
   status: any;
   onStop: () => void;
@@ -49,14 +48,14 @@ const ServerMonitor: React.FC<ServerMonitorProps> = ({ config, status, onStop })
           // If server becomes available, show a toast notification
           if (data.isAvailable && !monitorData.isAvailable) {
             toast({
-              title: "Server Available!",
-              description: `The server ${config.targetPlanCode} is now available.`,
+              title: "服务器可用！",
+              description: `服务器 ${config.targetPlanCode} 现在可用。`,
               variant: "default",
             });
           }
         }
       } catch (error) {
-        console.error("Failed to fetch status:", error);
+        console.error("获取状态失败:", error);
       }
     }, 5000); // Poll every 5 seconds
 
@@ -75,18 +74,18 @@ const ServerMonitor: React.FC<ServerMonitorProps> = ({ config, status, onStop })
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.message || 'Failed to initiate purchase');
+        throw new Error(error.message || '启动购买失败');
       }
 
       const result = await response.json();
       toast({
-        title: "Purchase Initiated",
-        description: `Order process started. Check logs for details.`,
+        title: "已启动购买",
+        description: `订单流程已开始。查看日志获取详情。`,
       });
     } catch (error) {
       toast({
-        title: "Purchase Failed",
-        description: error instanceof Error ? error.message : "Failed to initiate purchase",
+        title: "购买失败",
+        description: error instanceof Error ? error.message : "启动购买失败",
         variant: "destructive",
       });
     }
@@ -97,9 +96,9 @@ const ServerMonitor: React.FC<ServerMonitorProps> = ({ config, status, onStop })
       <CardHeader>
         <div className="flex justify-between items-center">
           <div>
-            <CardTitle>Server Monitoring Status</CardTitle>
+            <CardTitle>服务器监控状态</CardTitle>
             <CardDescription>
-              Monitoring {config.targetPlanCode} every {config.checkInterval} seconds
+              每 {config.checkInterval} 秒监控 {config.targetPlanCode} 
             </CardDescription>
           </div>
           <Badge 
@@ -107,9 +106,9 @@ const ServerMonitor: React.FC<ServerMonitorProps> = ({ config, status, onStop })
             className={monitorData.isAvailable ? "bg-green-500" : ""}
           >
             {monitorData.isAvailable ? (
-              <><CheckCircle className="h-4 w-4 mr-1" /> Available</>
+              <><CheckCircle className="h-4 w-4 mr-1" /> 可用</>
             ) : (
-              <><XCircle className="h-4 w-4 mr-1" /> Unavailable</>
+              <><XCircle className="h-4 w-4 mr-1" /> 不可用</>
             )}
           </Badge>
         </div>
@@ -119,7 +118,7 @@ const ServerMonitor: React.FC<ServerMonitorProps> = ({ config, status, onStop })
           <div className="border rounded-md p-3">
             <div className="flex items-center text-sm text-muted-foreground mb-2">
               <Clock className="mr-2 h-4 w-4" />
-              Last Checked
+              上次检查时间
             </div>
             <div className="text-sm font-medium">
               {formatDate(monitorData.lastChecked || new Date())}
@@ -128,7 +127,7 @@ const ServerMonitor: React.FC<ServerMonitorProps> = ({ config, status, onStop })
           <div className="border rounded-md p-3">
             <div className="flex items-center text-sm text-muted-foreground mb-2">
               <RefreshCw className="mr-2 h-4 w-4" />
-              Total Checks
+              检查总次数
             </div>
             <div className="text-sm font-medium">
               {monitorData.checkCount || 0}
@@ -137,16 +136,16 @@ const ServerMonitor: React.FC<ServerMonitorProps> = ({ config, status, onStop })
           <div className="border rounded-md p-3">
             <div className="flex items-center text-sm text-muted-foreground mb-2">
               <AlertTriangle className="mr-2 h-4 w-4" />
-              Auto Checkout
+              自动购买
             </div>
             <div className="text-sm font-medium">
-              {config.autoCheckout ? 'Enabled' : 'Disabled'}
+              {config.autoCheckout ? '已启用' : '已禁用'}
             </div>
           </div>
         </div>
 
         <div className="mt-4">
-          <h3 className="text-sm font-medium mb-2">Activity Log</h3>
+          <h3 className="text-sm font-medium mb-2">活动日志</h3>
           <div className="border rounded-md p-3 max-h-64 overflow-y-auto">
             {monitorData.logs && monitorData.logs.length > 0 ? (
               <div className="space-y-2">
@@ -158,21 +157,21 @@ const ServerMonitor: React.FC<ServerMonitorProps> = ({ config, status, onStop })
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-muted-foreground">No activity recorded yet.</p>
+              <p className="text-sm text-muted-foreground">尚无活动记录。</p>
             )}
           </div>
         </div>
       </CardContent>
       <CardFooter className="flex justify-between">
         <Button variant="outline" onClick={onStop}>
-          Stop Monitoring
+          停止监控
         </Button>
         <Button 
           onClick={handleManualPurchase}
           disabled={!monitorData.isAvailable}
           className={monitorData.isAvailable ? "bg-green-500 hover:bg-green-600" : ""}
         >
-          Purchase Now
+          立即购买
         </Button>
       </CardFooter>
     </Card>

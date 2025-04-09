@@ -1,46 +1,46 @@
 
-# OVH Server Sniper
+# OVH 服务器监控与抢购系统
 
-This application monitors OVH server availability and can automatically purchase servers when they become available.
+本应用程序监控 OVH 服务器的可用性，并在服务器可用时可以自动购买。
 
-## Features
+## 功能
 
-- Monitor OVH server availability by plan code
-- Receive Telegram notifications when servers become available
-- Auto-checkout option to purchase servers automatically
-- Configurable check intervals
-- Real-time monitoring status dashboard
+- 按计划代码监控 OVH 服务器可用性
+- 当服务器可用时接收 Telegram 通知
+- 自动结账选项，自动购买服务器
+- 可配置的检查间隔
+- 实时监控状态仪表板
 
-## Setup
+## 设置
 
-### Prerequisites
+### 前提条件
 
-1. OVH API credentials (App Key, App Secret, Consumer Key)
-2. Telegram Bot Token and Chat ID for notifications
-3. Knowledge of the OVH server plan code you want to monitor
+1. OVH API 凭据（应用密钥、应用秘密、消费者密钥）
+2. Telegram 机器人令牌和聊天 ID，用于通知
+3. 了解您想要监控的 OVH 服务器计划代码
 
-### OVH API Credentials
+### OVH API 凭据
 
-To get OVH API credentials:
+获取 OVH API 凭据：
 
-1. Go to https://api.ovh.com/createApp/
-2. Create an application to get your Application Key and Application Secret
-3. Generate a Consumer Key with the necessary access rights
+1. 访问 https://api.ovh.com/createApp/
+2. 创建一个应用程序，获取您的应用程序密钥和应用程序秘密
+3. 生成具有必要访问权限的消费者密钥
 
-### Usage
+### 使用方法
 
-1. Fill in the configuration form with your API credentials
-2. Set your server preferences (plan code, OS, duration, etc.)
-3. Start monitoring
-4. When a server becomes available, you'll receive a Telegram notification
-5. If auto-checkout is enabled, the application will attempt to purchase the server automatically
+1. 使用您的 API 凭据填写配置表单
+2. 设置您的服务器偏好（计划代码、操作系统、期限等）
+3. 开始监控
+4. 当服务器可用时，您将收到 Telegram 通知
+5. 如果启用了自动结账，应用程序将尝试自动购买服务器
 
-## Important Notes
+## 重要说明
 
-- This is a frontend application that makes API requests to OVH. Your API credentials are only stored in browser memory and are sent securely to the backend.
-- For security reasons, the application does not store your OVH API credentials between sessions.
-- Set a reasonable check interval (recommended: 60 seconds or more) to avoid API rate limits.
+- 这是一个前端应用程序，它向 OVH 发出 API 请求。您的 API 凭据仅存储在浏览器内存中，并安全地发送到后端。
+- 出于安全考虑，应用程序不会在会话之间存储您的 OVH API 凭据。
+- 设置合理的检查间隔（建议：60 秒或更长）以避免 API 速率限制。
 
-## Disclaimer
+## 免责声明
 
-This application is for educational purposes only. Please use responsibly and in accordance with OVH's terms of service.
+本应用程序仅供教育目的使用。请负责任地使用，并遵守 OVH 的服务条款。
