@@ -13,7 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
 import ServerMonitor from './ServerMonitor';
 import { defaultCredentials, OVHCredentials } from '@/config/apiConfig';
-import { AlertCircle, Key, Server, Clock, Globe, ShieldCheck } from 'lucide-react';
+import { AlertCircle, Key, Server, Clock, Globe, ShieldCheck, Bell } from 'lucide-react';
 import { Separator } from "@/components/ui/separator";
 
 const formSchema = z.object({
