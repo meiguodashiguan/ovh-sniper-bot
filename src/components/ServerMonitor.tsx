@@ -7,12 +7,23 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { CheckCircle, XCircle, RefreshCw, Clock, AlertTriangle } from 'lucide-react';
 
+// Update the type definition to match what's being passed from ServerSniperForm
 interface ServerMonitorProps {
   config: {
-    targetPlanCode: string;
-    identifier: string;
-    checkInterval: number;
-    autoCheckout: boolean;
+    appKey?: string;
+    appSecret?: string;
+    consumerKey?: string;
+    endpoint?: string;
+    telegramToken?: string;
+    telegramChatId?: string;
+    identifier: string; // Required
+    zone?: string;
+    targetPlanCode: string; // Required
+    targetOS?: string;
+    targetDuration?: string;
+    datacenter?: string;
+    checkInterval: number; // Required
+    autoCheckout: boolean; // Required
   };
   status: any;
   onStop: () => void;
